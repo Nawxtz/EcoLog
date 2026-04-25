@@ -1,3 +1,4 @@
+// app/page.tsx
 import { prisma } from "@/lib/prisma"
 import DashboardClient from "./_components/DashboardClient"
 
@@ -17,16 +18,13 @@ export default async function DashboardPage() {
   // Fetch saved cities from DB
   const cities = await prisma.savedCity.findMany({ orderBy: { createdAt: "desc" } })
 
-  // FIXED: Promise.allSettled instead of Promise.all.
-  // If one city's AQI fails (network timeout, bad coords), the page does NOT crash.
-  // Promise.all would crash the entire page if any single city fails.
+  // Promise.allSettled: if one city's AQI fails, the page does NOT crash.
   const aqiResults = await Promise.allSettled(
     cities.map((city) => fetchAQI(city.latitude, city.longitude))
   )
 
   const citiesWithAQI = cities.map((city, i) => ({
     ...city,
-    // If fetch succeeded, use the data. If it failed, set null (CityCard handles null gracefully).
     aqi: aqiResults[i].status === "fulfilled" ? aqiResults[i].value : null,
   }))
 
