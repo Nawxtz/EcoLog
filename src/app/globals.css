@@ -2,10 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Base ──────────────────────────────────────────────────────────── */
+:root {
+  --background: #f8f9ff;
+  --foreground: #0b1c30;
+}
+
 body {
-  background-color: #f8f9ff; /* bg-background */
-  color: #0b1c30;            /* text-on-background */
+  color: var(--foreground);
+  background: var(--background);
 }
 
 /* ── Custom scrollbar — subtle, matches design system ─────────────── */

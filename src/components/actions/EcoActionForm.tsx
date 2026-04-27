@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { actionSchema } from "@/schemas/actionSchema"
 
 interface EcoActionFormProps {
   onSuccess: () => void
@@ -51,9 +52,9 @@ export default function EcoActionForm({ onSuccess, editingAction, onCancelEdit }
     setErrors({})
     setServerError("")
 
-    // Frontend Zod validation (dynamic import so bundle stays small)
-    const { actionSchema } = await import("@/schemas/actionSchema")
+    // ✅ Frontend Zod validation (ใช้ actionSchema ที่ถูก import ไว้ด้านบนสุดของไฟล์แล้ว)
     const parsed = actionSchema.safeParse({ type, description, amount, date })
+    
     if (!parsed.success) {
       setErrors(parsed.error.flatten().fieldErrors)
       return
@@ -61,7 +62,7 @@ export default function EcoActionForm({ onSuccess, editingAction, onCancelEdit }
 
     setLoading(true)
     try {
-      const url    = isEditing ? `/api/actions/${editingAction.id}` : "/api/actions"
+      const url = isEditing ? `/api/actions/${editingAction.id}` : "/api/actions"
       const method = isEditing ? "PUT" : "POST"
 
       const res = await fetch(url, {
