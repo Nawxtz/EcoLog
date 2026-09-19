@@ -45,3 +45,24 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Failed to create action" }, { status: 500 })
   }
 }
+
+
+export async function PUT(request: NextRequest) {
+  try {
+    let body: any;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
+
+    const { items, goalMultiplier } = body;
+    // Calculate cumulative impact for active goal
+    const totalImpact = items.reduce((acc: number, item: any) => acc + item.co2Saved * goalMultiplier!.rate, 0);
+
+    return NextResponse.json({ success: true, totalImpact }, { status: 200 });
+  } catch (err) {
+    console.error("PUT /api/actions error:", err);
+    return NextResponse.json({ error: "Failed to calculate goal impact" }, { status: 500 });
+  }
+}
